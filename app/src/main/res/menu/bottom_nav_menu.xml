@@ -9,16 +9,16 @@
     <item
         android:id="@+id/navigation_photograph"
         android:icon="@drawable/photo_camera_24px"
-        android:title="_photograph" />
+        android:title="@string/title_photograph" />
 
     <item
         android:id="@+id/navigation_table"
         android:icon="@drawable/photo_frame_24px"
-        android:title="_table" />
+        android:title="@string/title_table" />
 
     <item
         android:id="@+id/navigation_settings"
         android:icon="@drawable/settings_24px"
-        android:title="_settings" />
+        android:title="@string/title_setting" />
 
 </menu>
