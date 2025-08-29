@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorOnBackground"
+    tools:context=".ui.TableFragment">
+
+    <FrameLayout
+        android:id="@+id/previewContainer_frameLayout"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
+        <androidx.camera.view.PreviewView
+            android:id="@+id/camera_previewView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintLeft_toRightOf="parent">
+        </androidx.camera.view.PreviewView>
+
+
+        <com.wyywn.anicam.adapter.TransformableLayout
+            android:id="@+id/webviewContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <com.wyywn.anicam.adapter.NonTouchableWebView
+                android:id="@+id/webview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:layerType="software" />
+        </com.wyywn.anicam.adapter.TransformableLayout>
+
+        <FrameLayout
+            android:id="@+id/pics_frameLayout"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent">
+        </FrameLayout>
+    </FrameLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/centralConstraint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/selectionLinear">
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/resetBrightness_button"
+                android:layout_width="48dp"
+                android:layout_height="56dp"
+                android:backgroundTint="@color/transparent_60"
+                app:icon="@drawable/filter_24px"
+                app:iconSize="24dp"
+                app:iconPadding="0dp"
+                app:iconGravity="textStart"
+                app:cornerRadius="16dp"
+                style="@style/Widget.Material3Expressive.Button.ElevatedButton" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/rightLinear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="end"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/zoom_slider"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/rightLinear"
+                app:labelBehavior="gone"
+                android:valueTo="100.0"
+                android:valueFrom="0.0"
+                android:value="0"
+                android:layout_marginBottom="0dp"
+                android:visibility="gone"
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/toggleZoomSlider_button"
+                android:layout_width="48dp"
+                android:layout_height="56dp"
+                android:backgroundTint="@color/transparent_60"
+                app:icon="@drawable/zoom_in_24px"
+                app:iconSize="24dp"
+                app:iconPadding="0dp"
+                app:iconGravity="textStart"
+                app:cornerRadius="16dp"
+                style="@style/Widget.Material3Expressive.Button.ElevatedButton" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/switchFlash_button"
+                android:layout_width="48dp"
+                android:layout_height="56dp"
+                android:backgroundTint="@color/transparent_60"
+                app:icon="@drawable/flash_off_24px"
+                app:iconSize="24dp"
+                app:iconPadding="0dp"
+                app:iconGravity="textStart"
+                app:cornerRadius="16dp"
+                style="@style/Widget.Material3Expressive.Button.ElevatedButton" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginBottom="4dp">
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="64dp"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/resetRotation_button"
+                    android:layout_width="48dp"
+                    android:layout_height="36dp"
+                    android:backgroundTint="@color/transparent_60"
+                    app:icon="@drawable/undo_24px"
+                    app:iconSize="24dp"
+                    app:iconPadding="0dp"
+                    app:iconGravity="textStart"
+                    app:cornerRadius="16dp"
+                    android:visibility="gone"
+                    style="@style/Widget.Material3Expressive.Button.ElevatedButton" />
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/rotation_slider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:labelBehavior="gone"
+                    android:valueFrom="-180.0"
+                    android:valueTo="180.0"
+                    android:value="0"/>
+            </LinearLayout>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="64dp" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/selectionLinear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/bottomBlank"
+        android:background="@drawable/background_top_rounded"
+        android:backgroundTint="@color/transparent_40"
+        android:orientation="vertical">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/switchScreen_tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            style="@style/Widget.Material3.TabLayout.Secondary"
+            android:background="@color/transparent">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/ui_photograph_lib" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/ui_photograph_screen" />
+        </com.google.android.material.tabs.TabLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/tabLib_linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="144dp"
+                android:orientation="horizontal"
+                android:background="@color/transparent"
+                android:visibility="visible">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/libSwitch_recyclerView"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/picSwitch_recyclerView"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:layout_height="match_parent"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tabScreen_linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="144dp"
+                android:orientation="horizontal"
+                android:background="@color/transparent"
+                android:visibility="gone">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/screenPreset_recyclerView"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/screenPic_recyclerView"
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:layout_height="match_parent"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="80dp"/>
+    </LinearLayout>
+
+    <Space
+        android:id="@+id/bottomButton_Blank"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomBlank"/>
+
+    <LinearLayout
+        android:id="@+id/bottomButton_Linear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@color/transparent"
+        app:layout_constraintBottom_toTopOf="@id/bottomBlank">
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/toggleSelection_button"
+            android:layout_width="48dp"
+            android:layout_height="56dp"
+            app:icon="@drawable/keyboard_arrow_down_24px"
+            app:iconSize="24dp"
+            app:iconPadding="0dp"
+            app:iconGravity="textStart"
+            app:cornerRadius="16dp"
+            android:backgroundTint="@color/transparent"
+            style="@style/Widget.Material3Expressive.Button.TonalButton" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/moveClock_button"
+            android:layout_width="48dp"
+            android:layout_height="56dp"
+            app:icon="@drawable/browse_gallery_24px"
+            app:iconSize="24dp"
+            app:iconPadding="0dp"
+            app:iconGravity="textStart"
+            app:cornerRadius="16dp"
+            style="@style/Widget.Material3Expressive.Button.TonalButton" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/hideAllUI_button"
+            android:layout_width="64dp"
+            android:layout_height="72dp"
+            app:icon="@drawable/bottom_panel_close_24px"
+            app:iconSize="36dp"
+            app:iconPadding="0dp"
+            app:iconGravity="textStart"
+            style="@style/Widget.Material3Expressive.Button.TonalButton" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/switchFacing_button"
+            android:layout_width="48dp"
+            android:layout_height="56dp"
+            app:icon="@drawable/flip_camera_ios_24px"
+            app:iconSize="24dp"
+            app:iconPadding="0dp"
+            app:iconGravity="textStart"
+            app:cornerRadius="16dp"
+            style="@style/Widget.Material3Expressive.Button.TonalButton" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/toggleNavigation_button"
+            android:layout_width="48dp"
+            android:layout_height="56dp"
+            app:icon="@drawable/keyboard_arrow_down_24px"
+            app:iconSize="24dp"
+            app:iconPadding="0dp"
+            app:iconGravity="textStart"
+            app:cornerRadius="16dp"
+            android:backgroundTint="@color/transparent"
+            style="@style/Widget.Material3Expressive.Button.TonalButton" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2" />
+
+    </LinearLayout>
+
+    <Space
+        android:id="@+id/bottomBlank"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

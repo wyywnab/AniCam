@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory android:title="@string/category_title_common" app:iconSpaceReserved="false">
+        <EditTextPreference
+            android:key="overflowExtent"
+            android:title="@string/setting_overflowExtent_title"
+            android:summary="@string/setting_overflowExtent_msg"
+            android:dialogTitle="@string/setting_overflowExtent_title"
+            app:dialogMessage="@string/setting_overflowExtent_msg"
+            android:defaultValue="0.5"
+            app:iconSpaceReserved="false"/>
+
+        <SwitchPreference
+            android:key="playgroundMode"
+            android:disableDependentsState="true"
+            android:title="@string/setting_playgroundMode_title"
+            android:summary="@string/setting_playgroundMode_msg"
+            android:defaultValue="false"
+            app:iconSpaceReserved="false"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/category_title_photograph" app:iconSpaceReserved="false">
+        <!-- 下拉列表选择框 -->
+        <DropDownPreference
+            android:defaultValue="up"
+            android:entries="@array/volumeButtonCaptureOptions"
+            android:entryValues="@array/volumeButtonCaptureValues"
+            android:key="volumeButtonCapture"
+            android:summary="@string/setting_volumeButtonCapture_msg"
+            android:title="@string/setting_volumeButtonCapture_title"
+            app:iconSpaceReserved="false"/>
+
+        <EditTextPreference
+            android:key="photoNameFormat"
+            android:title="@string/setting_photoNameFormat_title"
+            android:summary="@string/setting_photoNameFormat_msg"
+            android:dialogTitle="@string/setting_photoNameFormat_title"
+            android:dialogMessage="@string/setting_photoNameFormat_msg"
+            android:defaultValue="anicam_{yyyyMMdd_HHmmss}"
+            app:iconSpaceReserved="false"/>
+
+        <SwitchPreference
+            android:key="timeWatermark"
+            android:title="@string/setting_timeWatermark_title"
+            android:summary="@string/setting_timeWatermark_msg"
+            android:defaultValue="false"
+            app:iconSpaceReserved="false"/>
+        <EditTextPreference
+            android:key="timeWatermark_format"
+            android:dependency="timeWatermark"
+            android:title="@string/setting_timeWatermark_format_title"
+            android:summary="@string/setting_timeWatermark_format_msg"
+            android:dialogTitle="@string/setting_timeWatermark_format_title"
+            android:dialogMessage="@string/setting_timeWatermark_format_msg"
+            android:defaultValue="{yyyy/MM/dd HH:mm:ss}, Created By Anicam"
+            app:iconSpaceReserved="false"/>
+        <EditTextPreference
+            android:key="timeWatermark_color"
+            android:dependency="timeWatermark"
+            android:title="@string/setting_timeWatermark_color_title"
+            android:summary="@string/setting_timeWatermark_color_msg"
+            android:dialogTitle="@string/setting_timeWatermark_color_title"
+            android:dialogMessage="@string/setting_timeWatermark_color_msg"
+            android:defaultValue="yellow"
+            app:iconSpaceReserved="false"/>
+        <SeekBarPreference
+            android:key="timeWatermark_size"
+            android:dependency="timeWatermark"
+            android:title="@string/setting_timeWatermark_size_title"
+            android:defaultValue="40"
+            android:min="0"
+            android:max="200"
+            app:iconSpaceReserved="false"/>
+
+        <SwitchPreference
+            android:key="addEXIF"
+            android:dependency="playgroundMode"
+            android:title="@string/setting_addEXIF_title"
+            android:summary="@string/setting_addEXIF_msg"
+            android:defaultValue="true"
+            app:iconSpaceReserved="false"/>
+        <SwitchPreference
+            android:key="addLocation"
+            android:dependency="addEXIF"
+            android:title="@string/setting_addLocation_title"
+            android:summary="@string/setting_addLocation_msg"
+            android:defaultValue="true"
+            app:iconSpaceReserved="false"/>
+
+        <SwitchPreference
+            android:key="saveOrigin"
+            android:title="@string/setting_saveOrigin_title"
+            android:summary="@string/setting_saveOrigin_msg"
+            android:defaultValue="false"
+            app:iconSpaceReserved="false"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/category_table" app:iconSpaceReserved="false">
+        <SwitchPreference
+            android:key="showClock"
+            android:title="@string/setting_showClock_title"
+            android:summary="@string/setting_showClock_msg"
+            android:defaultValue="true"
+            app:iconSpaceReserved="false"/>
+
+        <Preference
+            android:key="importClockHTML"
+            android:title="@string/setting_importClockHTML_title"
+            android:summary="@string/setting_importClockHTML_msg"
+            app:iconSpaceReserved="false" />
+        <Preference
+            android:key="deleteImportedHTML"
+            android:title="@string/setting_deleteImportedHTML_title"
+            android:summary="@string/setting_deleteImportedHTML_msg"
+            app:iconSpaceReserved="false" />
+        <Preference
+            android:key="exportClockExample"
+            android:title="@string/setting_exportClockExample_title"
+            android:summary="@string/setting_exportClockExample_msg"
+            app:iconSpaceReserved="false" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/categoty_about" app:iconSpaceReserved="false">
+
+        <Preference
+            android:key="about"
+            android:title="@string/setting_about_title"
+            app:iconSpaceReserved="false"/>
+        <Preference
+            android:key="license"
+            android:title="@string/setting_license_title"
+            app:iconSpaceReserved="false"/>
+    </PreferenceCategory>
+</PreferenceScreen>

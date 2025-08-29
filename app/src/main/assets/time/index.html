@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="Time"
+        content="Digital Clock." />
+    <title>Time</title>
+    <style>
+        @font-face{
+            font-family: time;
+            src: url('digirtu_.ttf');
+        }
+        body{
+            visibility: hidden;
+            text-align: center;
+            margin:0 auto;
+            color: black;
+            background-color: transparent !important;
+            font-family:Helvetica;
+            -webkit-user-select: none; /* Safari */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* IE10+/Edge */
+            user-select: none; /* 标准语法 */
+
+            -webkit-text-stroke: 2px #ffffffc4;
+        }
+        #date{
+            font-size: 80px;
+            font-family: "Consolas","Menlo","Mono","Monospace";
+            font-family:time;
+        }
+        #day{
+            font-size: 70px;
+        }
+        .day{
+            font-size: 70px;
+        }
+        #time{
+            font-size: 200px;
+            /*font-family:time;*/
+            font-weight: normal;
+            /*font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;*/
+            font-family: "Consolas","Menlo","Mono","Monospace";
+            font-family:time;
+        }
+        #sec{
+            font-size: 150px;
+        }
+        #colon{
+            font-family:time;
+        }
+    </style>
+
+    <script>
+        function bodyScale() {
+            var devicewidth = document.documentElement.clientWidth;
+            var deviceheight = document.documentElement.clientHeight;
+            var scale;
+
+            if (devicewidth > 1920){
+                scale = 1920 / (680 + (1920 - 1024) * 0.25);
+            }
+            else if (devicewidth > 1024){
+                scale = devicewidth / (680 + (devicewidth - 1024) * 0.25);
+            }
+            else {
+                scale = devicewidth / 680;
+            }
+            
+            document.getElementById("main").style.zoom = scale;
+            var mtop;
+            if (deviceheight > 298 * scale){
+                mtop = (deviceheight - 298 * scale) / 2.1;
+            }
+            else {
+                mtop = 0;
+            }
+            document.getElementById("main").style.marginTop = mtop / scale + "px";
+        }
+        function timestampToTime(timestamp) {
+            var date = new Date(timestamp);
+            h = date.getHours() + ':';
+            m = date.getMinutes() + ':';
+            s = date.getSeconds();
+            return h+m+s;
+        }
+        function timestampToDate(timestamp) {
+            var date = new Date(timestamp);
+            Y = date.getFullYear() + ' ';
+            M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + ' ';
+            D = (date.getDate()+1 < 10 ? '0'+(date.getDate()+1) : date.getDate()+1) - 1;
+            return Y+M+D;
+        }
+        function gethour(ts){
+            var date = new Date(ts);
+            var hour = date.getHours() - 1;
+            hour = (hour+1 < 10 ? '0'+(hour+1) : hour+1);
+            return hour;
+        }
+        function getmin(ts){
+            var date = new Date(ts);
+            var min = date.getMinutes() - 1;
+            min = (min+1 < 10 ? '0'+(min+1) : min+1);
+            return min;
+        }
+        function getsec(ts){
+            var date = new Date(ts);
+            var sec = date.getSeconds() - 1;
+            sec = (sec+1 < 10 ? '0'+(sec+1) : sec+1);
+            return sec;
+        }
+        function getday(ts){
+            var date = new Date(ts);
+            var day = date.getDay();
+            switch (day){
+                case 1:
+                    return "一";
+                case 2:
+                    return "二";
+                case 3:
+                    return "三";
+                case 4:
+                    return "四";
+                case 5:
+                    return "五";
+                case 6:
+                    return "六";
+                case 0:
+                    return "天";
+            }
+        }
+        function changeText(ele,tar){
+            
+            if (document.getElementById(ele).innerHTML != tar){
+                document.getElementById(ele).innerHTML = tar;
+            }
+            
+        }
+        function getTimeStamp(callback){
+            setTimeout(() => {
+                callback(Date.now());
+            }, 100);
+            
+        }
+        var offset = 0;
+        var time0 = Date.now();
+        getTimeStamp(function(serverTime){
+            var time1 = Date.now();
+            offset = time1 - (parseInt(serverTime) + (time1 - time0) / 2);
+            //alert(offset);
+            console.log(offset);
+            document.body.style.visibility = "visible";
+            var mainIntervel = setInterval(function(){
+                timestamp = Date.now() - offset;
+                changeText("date",timestampToDate(timestamp));
+                changeText("day",getday(timestamp));
+                changeText("hour",gethour(timestamp));
+                changeText("min",getmin(timestamp));
+                changeText("sec",getsec(timestamp));
+                
+                if (getsec(timestamp) % 2 == 1){
+                    document.getElementById("colon").style.visibility = "hidden";
+                }
+                else{
+                    document.getElementById("colon").style.visibility = "visible";
+                }
+            },10);
+        });
+        var autoInterval = setInterval(function(){
+            var time0 = Date.now();
+            getTimeStamp(function(serverTime){
+                var time1 = Date.now();
+                offset = time1 - (parseInt(serverTime) + (time1 - time0) / 2);
+                //alert(offset);
+                console.log(offset);
+            })
+        },1000*60*20);
+    </script>
+</head>
+<body>
+
+    <div id="main">
+        <a id="date"></a>&emsp;&emsp;<a class="day">星期</a><a id="day"></a><br>
+        <div id="time">
+            <a id="hour"></a><a id="colon">:</a><a id="min"></a> 
+            <a id="sec" status="1"></a>
+        </div>
+    </div>
+    <script>
+        onload = function(){
+            bodyScale();
+        }
+        window.addEventListener('resize', bodyScale);
+    </script>
+</body>
+</html>

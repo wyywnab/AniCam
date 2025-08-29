@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 下拉列表选项 -->
+    <string-array name="volumeButtonCaptureOptions">
+        <item>关闭</item>
+        <item>音量上键</item>
+        <item>音量下键</item>
+    </string-array>
+    <string-array name="volumeButtonCaptureValues">
+        <item>off</item>
+        <item>up</item>
+        <item>down</item>
+    </string-array>
+</resources>
