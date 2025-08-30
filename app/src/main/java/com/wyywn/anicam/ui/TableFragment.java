@@ -82,6 +82,7 @@ import com.wyywn.anicam.utils.TextViewHint;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -665,18 +666,36 @@ public class TableFragment extends Fragment implements
     }
 
     private void onToggleUI(){
+        boolean isPortrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
         SharedPreferences.Editor editor = prefs_table.edit();
         if (isAllHided){
             if (prefs_table.getBoolean("collapsedNavigation", false)){
                 assert getActivity() != null;
                 Functions.showContentWithAnimation(getActivity().findViewById(R.id.nav_view));
+                if (!isPortrait){
+                    binding.bottomButtonLinear.setOrientation(LinearLayout.HORIZONTAL);
+                }
             }
             if (prefs_table.getBoolean("collapsedSelection", false)){
-                Functions.showContentWithAnimation(binding.selectionLinear);
+                if (!isPortrait){
+                        binding.right.setBackgroundResource(R.color.transparent_40);
+                        Functions.showContentWithAnimation(binding.right, () -> {
+                            if (binding.selectionLinear.getVisibility() == View.GONE) {
+                                Functions.showContentWithAnimation(binding.selectionLinear);
+                            }
+                        });
 
-                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.centralConstraint.getLayoutParams();
-                params.bottomToTop = binding.selectionLinear.getId();
-                binding.centralConstraint.setLayoutParams(params);
+                        ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.right.getLayoutParams();
+                        params.width = (int) (320 * getResources().getDisplayMetrics().density);
+                        binding.right.setLayoutParams(params);
+
+                } else {
+                    Functions.showContentWithAnimation(binding.selectionLinear);
+
+                    ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.centralConstraint.getLayoutParams();
+                    params.bottomToTop = binding.selectionLinear.getId();
+                    binding.centralConstraint.setLayoutParams(params);
+                }
             }
             if (prefs_table.getBoolean("collapsedCentralConstraint", false)){
                 Functions.showContentWithAnimation(binding.centralConstraint);
@@ -696,8 +715,14 @@ public class TableFragment extends Fragment implements
                 editor.putBoolean("collapsedNavigation", true);
             }
             if (!prefs_table.getBoolean("collapsedSelection", false)){
-                Functions.hideContentWithAnimation(binding.selectionLinear);
+                //Functions.hideContentWithAnimation(binding.selectionLinear);
+                if (!isPortrait){
+                    Functions.hideContentWithAnimation(binding.right);
+                } else {
+                    Functions.hideContentWithAnimation(binding.selectionLinear);
+                }
                 editor.putBoolean("collapsedSelection", true);
+
             }
             if (!prefs_table.getBoolean("collapsedCentralConstraint", false)){
                 Functions.hideContentWithAnimation(binding.centralConstraint);
@@ -708,6 +733,7 @@ public class TableFragment extends Fragment implements
                 editor.putBoolean("collapsedBottomButtonLinear", true);
             }
             editor.apply();
+            TextViewHint.showText(R.string.info_uiHidedTip);
         }
         isAllHided = !isAllHided;
     }
@@ -967,7 +993,7 @@ public class TableFragment extends Fragment implements
                                 latestMatrix[0] = matrix;
                             }
 
-                            TextViewHint.showText(getString(R.string.hint_scale).concat(scale.toString()));
+                            //TextViewHint.showText(getString(R.string.hint_scale).concat(scale.toString()));
                         }
                     } else if (!isScaling[0] && event.getPointerCount() == 1) {
                         // 移动操作
@@ -1131,9 +1157,16 @@ public class TableFragment extends Fragment implements
                     try {
                         for (int i = 0; i < selectedPresetPicsArr.length(); i++) {
                             JSONObject localPicObj = selectedPresetPicsArr.getJSONObject(i);
+
+                            Uri uri = Uri.parse(localPicObj.getString("uri"));
+                            if (!Functions.isUriFileExists(getContext(), uri)){
+                                Toast.makeText(getContext(), R.string.info_picUriNotExists, Toast.LENGTH_SHORT).show();
+                                continue;
+                            }
+
                             ImageView tempImageView = new ImageView(getContext());
                             tempImageView.setScaleType(ImageView.ScaleType.MATRIX);
-                            tempImageView.setImageURI(Uri.parse(localPicObj.getString("uri")));
+                            tempImageView.setImageURI(uri);
                             tempImageView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                                 @Override
                                 public boolean onPreDraw() {
@@ -1713,13 +1746,13 @@ public class TableFragment extends Fragment implements
     @Override
     public void onItemRemoved(int position) {
         try {
+            if (position == selectedPicPosition){
+                selectedPicPosition = -1;
+            }
             JSONArray localScreenPresetsArr = envJsonObj.getJSONArray("screenPresets");
             int pos = Functions.matchedPositionOfId(localScreenPresetsArr, envJsonObj.getLong("currentPhotographSelectedPresetId"));
             envJsonObj.getJSONArray("screenPresets").getJSONObject(pos).getJSONArray("pics").remove(position);
             Functions.saveEnv(exDataPath, envJsonObj);
-            if (position == selectedPicPosition){
-                selectedPicPosition = -1;
-            }
             //envJsonObj.put("currentPhotographSelectedPresetId", 0);
             //refreshPresetListRecycler(false);
             loadPicsToScreen();

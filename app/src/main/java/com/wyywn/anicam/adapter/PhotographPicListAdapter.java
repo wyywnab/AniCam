@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.color.MaterialColors;
 import com.wyywn.anicam.utils.Functions;
 import com.wyywn.anicam.R;
 
@@ -91,7 +92,8 @@ public class PhotographPicListAdapter extends RecyclerView.Adapter<PhotographPic
             Uri imageUri = Uri.parse(item.getString("uri"));
             if (!Functions.isUriFileExists(holder.context, imageUri)){
                 holder.textView.setText(item.getString("name"));
-                holder.background.setBackgroundColor(Color.rgb(255, 0, 0));
+                int errorColor = MaterialColors.getColor(holder.textView.getRootView(), com.google.android.material.R.attr.colorErrorContainer);
+                holder.background.setBackgroundColor(errorColor);
             } else {
                 holder.textView.setText(item.getString("name"));
             }

@@ -20,6 +20,19 @@
             app:layout_constraintLeft_toRightOf="parent">
         </androidx.camera.view.PreviewView>
 
+        <com.wyywn.anicam.adapter.TransformableLayout
+            android:id="@+id/webviewContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintLeft_toRightOf="parent">
+            <com.wyywn.anicam.adapter.NonTouchableWebView
+                android:id="@+id/webview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:layerType="software" />
+        </com.wyywn.anicam.adapter.TransformableLayout>
+
         <FrameLayout
             android:id="@+id/pics_frameLayout"
             app:layout_constraintLeft_toLeftOf="parent"

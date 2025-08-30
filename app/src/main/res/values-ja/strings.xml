@@ -39,10 +39,10 @@
     <string name="hint_scale">スケール：</string>
     <string name="info_locationTimeout">位置情報取得がタイムアウトしました。保存されません</string>
     <string name="info_fileSaveFailed">ファイル保存に失敗しました</string>
-    <string name="info_fileSaved">ファイルを保存しました</string>
-    <string name="info_fileSavedWithExif">ファイルを保存しました（情報付き）：</string>
+    <string name="info_fileSaved">写真を保存しました</string>
+    <string name="info_fileSavedWithExif">写真を保存しました（情報付き）：<![CDATA[<br>]]></string>
     <string name="content_defaultPresetName">デフォルト</string>
-    <string name="info_picUriNotExists">ファイルが存在しないため追加できません</string>
+    <string name="info_picUriNotExists">ファイルが存在しません</string>
     <string name="suffix_notExistingPic">（紛失）</string>
     <string name="menu_copy">コピー</string>
     <string name="content_defaultNewPresetName">新しいプリセット</string>
@@ -100,4 +100,12 @@
     <string name="ui_saturation">彩度</string>
     <string name="ui_luminance">明度</string>
     <string name="ui_button_reset">リセット</string>
+    <string name="info_captureFailed">写真撮影に失敗しました</string>
+    <string name="info_noAvailablePhotoViewer">利用可能な画像ビューアが見つかりません</string>
+    <string name="ui_selectPhotoViewer">画像ビューアを選択</string>
+    <string name="content_location">位置情報</string>
+    <string name="content_exif">EXIF</string>
+    <string name="info_uiHidedTip">UIは非表示中です。画面を長押しで元に戻ります</string>
+    <string name="info_picAutoDeleted_prefix">追加した画像<![CDATA[<br>]]></string>
+    <string name="info_picAutoDeleted_suffix"><![CDATA[<br>]]>存在せず、自動削除されました</string>
 </resources>

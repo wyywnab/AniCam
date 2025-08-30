@@ -39,10 +39,10 @@
     <string name="hint_scale">Scale:</string>
     <string name="info_locationTimeout">Location timeout, will not save location info</string>
     <string name="info_fileSaveFailed">File save failed</string>
-    <string name="info_fileSaved">File saved</string>
-    <string name="info_fileSavedWithExif">File saved with info:</string>
+    <string name="info_fileSaved">Photo saved</string>
+    <string name="info_fileSavedWithExif">Photo saved with info:<![CDATA[<br>]]></string>
     <string name="content_defaultPresetName">Default</string>
-    <string name="info_picUriNotExists">File does not exist, cannot add</string>
+    <string name="info_picUriNotExists">File not found</string>
     <string name="suffix_notExistingPic">(missing)</string>
     <string name="menu_copy">Copy</string>
     <string name="content_defaultNewPresetName">New Preset</string>
@@ -100,4 +100,12 @@
     <string name="ui_saturation">Saturation</string>
     <string name="ui_luminance">Luminance</string>
     <string name="ui_button_reset">Reset</string>
+    <string name="info_captureFailed">Photo capture failed</string>
+    <string name="info_noAvailablePhotoViewer">No available image viewer found</string>
+    <string name="ui_selectPhotoViewer">Select image viewer</string>
+    <string name="content_location">Location</string>
+    <string name="content_exif">EXIF</string>
+    <string name="info_uiHidedTip">UI hidden. Long-press screen to restore.</string>
+    <string name="info_picAutoDeleted_prefix">Added picture<![CDATA[<br>]]></string>
+    <string name="info_picAutoDeleted_suffix"><![CDATA[<br>]]>not found, automatically deleted</string>
 </resources>

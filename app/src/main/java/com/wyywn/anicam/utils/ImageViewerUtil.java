@@ -7,6 +7,8 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.widget.Toast;
 
+import com.wyywn.anicam.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +40,7 @@ public class ImageViewerUtil {
      */
     public static void viewImageWithSystemViewer(Context context, Uri imageUri) {
         if (context == null) {
-            Toast.makeText(context, "文件不存在", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context, "文件不存在", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -67,10 +69,10 @@ public class ImageViewerUtil {
 
         // 没有找到系统图片查看器或指定包名启动失败，让用户选择
         try {
-            Intent chooserIntent = Intent.createChooser(intent, "选择图片查看器");
+            Intent chooserIntent = Intent.createChooser(intent, context.getString(R.string.ui_selectPhotoViewer));
             context.startActivity(chooserIntent);
         } catch (Exception e) {
-            Toast.makeText(context, "未找到可用的图片查看器", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.info_noAvailablePhotoViewer, Toast.LENGTH_SHORT).show();
         }
     }
 

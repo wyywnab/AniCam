@@ -5,7 +5,6 @@ import androidx.appcompat.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -194,8 +193,8 @@ public class HomeFragment extends Fragment implements
 
 
     private void onAddLibButtonClick(View view){
-        requireActivity().runOnUiThread(() ->
-                Toast.makeText(requireContext(), "click", Toast.LENGTH_SHORT).show());
+        /*requireActivity().runOnUiThread(() ->
+                Toast.makeText(requireContext(), "click", Toast.LENGTH_SHORT).show());*/
 
         /*// 创建自定义对话框布局
         View dialogView = getLayoutInflater().inflate(R.layout.layout_input_dialog_oneline, null);
@@ -277,8 +276,8 @@ public class HomeFragment extends Fragment implements
         HomeLibManagerAdapter.OnItemClickListener itemClickListener = position -> {
             try {
                 JSONObject selectedItem = libJsonArr.getJSONObject(position);
-                requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(), selectedItem.toString(), Toast.LENGTH_SHORT).show());
+                /*requireActivity().runOnUiThread(() ->
+                        Toast.makeText(requireContext(), selectedItem.toString(), Toast.LENGTH_SHORT).show());*/
                 selectedLibPosition = position;
                 setPicDisplay(selectedItem);
                 homeLibAdapter.setSelectedPosition(selectedLibPosition);
@@ -330,8 +329,8 @@ public class HomeFragment extends Fragment implements
     private boolean handleLibMenuAction(int position, int id) {
         // 处理菜单项选择
         //Log.d("MenuAction", "Position: " + position + ", Action: " + action);
-        requireActivity().runOnUiThread(() ->
-                Toast.makeText(requireContext(), "MenuAction: Position: " + position + ", Action: " + id, Toast.LENGTH_SHORT).show());
+        /*requireActivity().runOnUiThread(() ->
+                Toast.makeText(requireContext(), "MenuAction: Position: " + position + ", Action: " + id, Toast.LENGTH_SHORT).show());*/
         if (id == MENU_EDIT){
             /*// 创建自定义对话框布局
             View dialogView = getLayoutInflater().inflate(R.layout.layout_input_dialog_oneline, null);
@@ -434,7 +433,7 @@ public class HomeFragment extends Fragment implements
     public void onOrderChanged(int fromPosition, int toPosition, JSONArray newOrder) {
         // 调用保存函数
         if (sortingMode == SORTING_LIB){
-            Toast.makeText(requireContext(), String.valueOf(selectedLibPosition), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(requireContext(), String.valueOf(selectedLibPosition), Toast.LENGTH_SHORT).show();
             /*try {
                 long currentId = libJsonArr.getJSONObject(selectedLibPosition).getLong("id");
                 for (int i = 0; i < newOrder.length(); i++) {
@@ -456,7 +455,7 @@ public class HomeFragment extends Fragment implements
                     selectedLibPosition += 1;
                 }
             }
-            Toast.makeText(requireContext(), String.valueOf(selectedLibPosition), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(requireContext(), String.valueOf(selectedLibPosition), Toast.LENGTH_SHORT).show();
         } else if (sortingMode == SORTING_PIC) {
             try {
                 JSONObject localObj = libJsonArr.getJSONObject(selectedLibPosition);
@@ -509,10 +508,15 @@ public class HomeFragment extends Fragment implements
         HomePicManagerAdapter.OnItemClickListener itemClickListener = position -> {
             try {
                 JSONObject selectedItem = libJsonArr.getJSONObject(selectedLibPosition).getJSONArray("pic").getJSONObject(position);
-                requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(), selectedItem.toString(), Toast.LENGTH_SHORT).show());
+                /*requireActivity().runOnUiThread(() ->
+                        Toast.makeText(requireContext(), selectedItem.toString(), Toast.LENGTH_SHORT).show());*/
 
-                ImageViewerUtil.viewImageWithSystemViewer(getContext(), Uri.parse(selectedItem.getString("uri")));
+                Uri uri = Uri.parse(selectedItem.getString("uri"));
+                if (!Functions.isUriFileExists(getContext(), uri)){
+                    Toast.makeText(getContext(), R.string.info_picUriNotExists, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                ImageViewerUtil.viewImageWithSystemViewer(getContext(), uri);
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
@@ -588,12 +592,12 @@ public class HomeFragment extends Fragment implements
 
                 String fileName = Functions.getFileName(getContext(), uri);
                 if (isRedundantPic) {
-                    requireActivity().runOnUiThread(() ->
-                            Toast.makeText(requireContext(), "Selected file: " + fileName + " is redundant, pass", Toast.LENGTH_SHORT).show());
+                    /*requireActivity().runOnUiThread(() ->
+                            Toast.makeText(requireContext(), "Selected file: " + fileName + " is redundant, pass", Toast.LENGTH_SHORT).show());*/
                     continue;
                 }
-                requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(), "Selected file: " + fileName, Toast.LENGTH_SHORT).show());
+                /*requireActivity().runOnUiThread(() ->
+                        Toast.makeText(requireContext(), "Selected file: " + fileName, Toast.LENGTH_SHORT).show());*/
                 JSONObject tempObj = new JSONObject();
                 tempObj.put("id", System.currentTimeMillis());
                 tempObj.put("name", fileName);
@@ -601,11 +605,11 @@ public class HomeFragment extends Fragment implements
                 localPicArr.put(tempObj);
             }
 
-            requireActivity().runOnUiThread(() -> {
+            /*requireActivity().runOnUiThread(() -> {
                 Toast.makeText(requireContext(),
                         "已选择 " + uris.size() + " 个文件",
                         Toast.LENGTH_SHORT).show();
-            });
+            });*/
 
             localLibObj.put("pic", localPicArr);
             libJsonArr.put(operationPosition, localLibObj);
@@ -667,8 +671,8 @@ public class HomeFragment extends Fragment implements
     private boolean handlePicMenuAction(int position, int id) {
         // 处理菜单项选择
         //Log.d("MenuAction", "Position: " + position + ", Action: " + action);
-        requireActivity().runOnUiThread(() ->
-                Toast.makeText(requireContext(), "MenuAction: Position: " + position + ", Action: " + id, Toast.LENGTH_SHORT).show());
+        /*requireActivity().runOnUiThread(() ->
+                Toast.makeText(requireContext(), "MenuAction: Position: " + position + ", Action: " + id, Toast.LENGTH_SHORT).show());*/
 
         switch (id){
             case MENU_EDIT:

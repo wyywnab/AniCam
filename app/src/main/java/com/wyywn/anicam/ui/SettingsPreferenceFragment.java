@@ -1,7 +1,6 @@
 package com.wyywn.anicam.ui;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -9,33 +8,21 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.FileProvider;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.textfield.TextInputEditText;
 import com.wyywn.anicam.MainActivity;
 import com.wyywn.anicam.R;
-import com.wyywn.anicam.adapter.NonTouchableWebView;
-import com.wyywn.anicam.utils.FullScreenUtils;
 import com.wyywn.anicam.utils.Functions;
 import com.wyywn.anicam.utils.TextViewHint;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -49,7 +36,6 @@ import java.util.zip.ZipInputStream;
 public class SettingsPreferenceFragment extends PreferenceFragmentCompat {
 
     private Preference importHTML;
-    private String exDataPath;
 
     File clockHTMLDestDir;
 
@@ -65,7 +51,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.settings_preferences, rootKey);
 
-        exDataPath = Objects.requireNonNull(((MainActivity) getActivity()).getExternalFilesDir("")).getAbsolutePath();
+        //exDataPath = Objects.requireNonNull(((MainActivity) getActivity()).getExternalFilesDir("")).getAbsolutePath();
 
         TextViewHint.init(requireActivity().findViewById(R.id.info_textView));
 

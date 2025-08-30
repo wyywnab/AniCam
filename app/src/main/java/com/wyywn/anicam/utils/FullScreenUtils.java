@@ -66,10 +66,8 @@ public class FullScreenUtils {
         window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
         // 清除透明状态栏和导航栏标志
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        }
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
     }
 
     /**
@@ -220,10 +218,8 @@ public class FullScreenUtils {
         window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
         // 对于旧版本Android，设置透明状态栏
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        }
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
     }
 
     /**
@@ -419,11 +415,7 @@ public class FullScreenUtils {
      */
     public static int getRealScreenHeight(Activity activity) {
         DisplayMetrics metrics = new DisplayMetrics();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            activity.getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
-        } else {
-            activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        }
+        activity.getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
         return metrics.heightPixels;
     }
 
@@ -432,11 +424,7 @@ public class FullScreenUtils {
      */
     public static int getRealScreenWidth(Activity activity) {
         DisplayMetrics metrics = new DisplayMetrics();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            activity.getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
-        } else {
-            activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        }
+        activity.getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
         return metrics.widthPixels;
     }
 }

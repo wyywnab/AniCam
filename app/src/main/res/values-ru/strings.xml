@@ -39,10 +39,10 @@
     <string name="hint_scale">Масштаб:</string>
     <string name="info_locationTimeout">Таймаут определения местоположения, данные не будут сохранены</string>
     <string name="info_fileSaveFailed">Ошибка сохранения файла</string>
-    <string name="info_fileSaved">Файл сохранён</string>
-    <string name="info_fileSavedWithExif">Файл сохранён с данными:</string>
+    <string name="info_fileSaved">Фото сохранено</string>
+    <string name="info_fileSavedWithExif">Фото сохранено с данными:<![CDATA[<br>]]></string>
     <string name="content_defaultPresetName">По умолчанию</string>
-    <string name="info_picUriNotExists">Файл не существует, добавление невозможно</string>
+    <string name="info_picUriNotExists">Файл не найден</string>
     <string name="suffix_notExistingPic">(отсутствует)</string>
     <string name="menu_copy">Копировать</string>
     <string name="content_defaultNewPresetName">Новый пресет</string>
@@ -100,4 +100,12 @@
     <string name="ui_saturation">Насыщенность</string>
     <string name="ui_luminance">Яркость</string>
     <string name="ui_button_reset">Сброс</string>
+    <string name="info_captureFailed">Ошибка съёмки</string>
+    <string name="info_noAvailablePhotoViewer">Доступные средства просмотра изображений не найдены</string>
+    <string name="ui_selectPhotoViewer">Выберите средство просмотра</string>
+    <string name="content_location">Данные о местоположении</string>
+    <string name="content_exif">ЭКСИФ</string>
+    <string name="info_uiHidedTip">Интерфейс скрыт. Длительное нажатие для восстановления</string>
+    <string name="info_picAutoDeleted_prefix">Добавленное изображение<![CDATA[<br>]]></string>
+    <string name="info_picAutoDeleted_suffix"><![CDATA[<br>]]>не найдено, удалено автоматически</string>
 </resources>

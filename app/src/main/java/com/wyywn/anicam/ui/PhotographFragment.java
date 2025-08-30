@@ -1003,7 +1003,7 @@ public class PhotographFragment extends Fragment implements
                             applyBoundaryConstraints(matrix, imageView, overflowExtent);
                             imageView.setImageMatrix(matrix);
 
-                            TextViewHint.showText(getString(R.string.hint_scale).concat(scale.toString()));
+                            //TextViewHint.showText(getString(R.string.hint_scale).concat(scale.toString()));
                         }
                     } else if (!isScaling[0] && event.getPointerCount() == 1) {
                         // 移动操作
@@ -1164,9 +1164,16 @@ public class PhotographFragment extends Fragment implements
                     try {
                         for (int i = 0; i < selectedPresetPicsArr.length(); i++) {
                             JSONObject localPicObj = selectedPresetPicsArr.getJSONObject(i);
+
+                            Uri uri = Uri.parse(localPicObj.getString("uri"));
+                            if (!Functions.isUriFileExists(getContext(), uri)){
+                                Toast.makeText(getContext(), R.string.info_picUriNotExists, Toast.LENGTH_SHORT).show();
+                                continue;
+                            }
+
                             ImageView tempImageView = new ImageView(getContext());
                             tempImageView.setScaleType(ImageView.ScaleType.MATRIX);
-                            tempImageView.setImageURI(Uri.parse(localPicObj.getString("uri")));
+                            tempImageView.setImageURI(uri);
                             tempImageView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                                 @Override
                                 public boolean onPreDraw() {
@@ -1255,8 +1262,8 @@ public class PhotographFragment extends Fragment implements
             @Override
             public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                 // 图片保存成功
-                requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show());
+                /*requireActivity().runOnUiThread(() ->
+                        Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show());*/
                 mainPhotoProcessing(tempFile, filename);
             }
 
@@ -1264,7 +1271,7 @@ public class PhotographFragment extends Fragment implements
             public void onError(@NonNull ImageCaptureException exception) {
                 // 图片保存失败
                 requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(), "Failed", Toast.LENGTH_SHORT).show());
+                        Toast.makeText(requireContext(), getString(R.string.info_captureFailed), Toast.LENGTH_SHORT).show());
             }
         });
     }
@@ -1295,7 +1302,7 @@ public class PhotographFragment extends Fragment implements
                             Functions.addExifData(getContext(), outputFile, Functions.allExifKeys, exifData, location);
                             //Functions.copyInteriorToDCIM(getContext(), outputFile, "_Anicam", filename);
                             TextViewHint.showText(location.toString());
-                            onProcessedPhoto(outputFile, filename.concat(".jpg"), new String[]{"EXIF","Location"});
+                            onProcessedPhoto(outputFile, filename.concat(".jpg"), new String[]{"EXIF", getString(R.string.content_location)});
                             /*requireActivity().runOnUiThread(() ->
                                     Toast.makeText(requireContext(), "finished processing", Toast.LENGTH_SHORT).show());*/
                         }
@@ -1686,8 +1693,35 @@ public class PhotographFragment extends Fragment implements
                 defaultPicsObj.put("name", getString(R.string.content_defaultPresetName));
                 defaultPicsObj.put("pics", new JSONArray());
                 localScreenPresetsArr.put(defaultPicsObj);
+            } else {
+                for (int i = 0; i < localScreenPresetsArr.length(); i++) {
+                    JSONArray presetPicsArr = envJsonObj.getJSONArray("screenPresets").getJSONObject(i).getJSONArray("pics");
+                    int length = presetPicsArr.length();
+                    /*for (int j = 0; j < length; j++) {
+                        Uri currentPicUri = Uri.parse(presetPicsArr.getJSONObject(j).getString("uri"));
+                        if (!Functions.isUriFileExists(getContext(), currentPicUri)){
+                            localScreenPresetsArr.remove(j);
+                            j--;
+                            length--;
+                        }
+                    }*/
+                    int j = 0;
+                    while (j < length){
+                        Uri currentPicUri = Uri.parse(presetPicsArr.getJSONObject(j).getString("uri"));
+                        if (!Functions.isUriFileExists(getContext(), currentPicUri)){
+                            TextViewHint.showText(getString(R.string.info_picAutoDeleted_prefix)
+                                    .concat(presetPicsArr.getJSONObject(j).getString("name"))
+                                    .concat(getString(R.string.info_picAutoDeleted_suffix))
+                            );
+                            presetPicsArr.remove(j);
+                            length--;
+                        } else {
+                            j++;
+                        }
+                    }
+                }
             }
-            envJsonObj.put("screenPresets", localScreenPresetsArr);
+            //envJsonObj.put("screenPresets", localScreenPresetsArr);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -1743,6 +1777,11 @@ public class PhotographFragment extends Fragment implements
                     addPicToScreenTab(libObj.getJSONArray("pic").getJSONObject(position));
                 } else {
                     JSONObject tempPicObj = new JSONObject(libObj.getJSONArray("pic").getJSONObject(position).toString());
+
+                    if (!Functions.isUriFileExists(getContext(), Uri.parse(tempPicObj.getString("uri")))){
+                        Toast.makeText(getContext(), R.string.info_picUriNotExists, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
                     Functions.setDefaultMatrixValues(tempPicObj, null, requireContext().getContentResolver());
                     if (selectedPicPosition == -1){
@@ -2099,13 +2138,13 @@ public class PhotographFragment extends Fragment implements
     @Override
     public void onItemRemoved(int position) {
         try {
+            if (position == selectedPicPosition){
+                selectedPicPosition = -1;
+            }
             JSONArray localScreenPresetsArr = envJsonObj.getJSONArray("screenPresets");
             int pos = Functions.matchedPositionOfId(localScreenPresetsArr, envJsonObj.getLong("currentPhotographSelectedPresetId"));
             envJsonObj.getJSONArray("screenPresets").getJSONObject(pos).getJSONArray("pics").remove(position);
             Functions.saveEnv(exDataPath, envJsonObj);
-            if (position == selectedPicPosition){
-                selectedPicPosition = -1;
-            }
             //envJsonObj.put("currentPhotographSelectedPresetId", 0);
             //refreshPresetListRecycler(false);
             loadPicsToScreen();

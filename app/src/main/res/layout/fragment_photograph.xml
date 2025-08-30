@@ -214,7 +214,7 @@
         android:id="@+id/selectionLinear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/bottomBlank"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:background="@drawable/background_top_rounded"
         android:backgroundTint="@color/transparent_40"
         android:orientation="vertical">
@@ -289,7 +289,7 @@
         </LinearLayout>
         <Space
             android:layout_width="match_parent"
-            android:layout_height="80dp"/>
+            android:layout_height="160dp"/>
     </LinearLayout>
 
     <Space
