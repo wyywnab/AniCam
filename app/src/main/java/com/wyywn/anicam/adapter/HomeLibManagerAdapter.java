@@ -1,6 +1,7 @@
 package com.wyywn.anicam.adapter;
 
 import android.net.Uri;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,7 +71,9 @@ public class HomeLibManagerAdapter extends RecyclerView.Adapter<HomeLibManagerAd
     public void onBindViewHolder(ViewHolder holder, int position) {
         try {
             JSONObject item = mData.getJSONObject(position);
-            holder.textView.setText(item.getString("name"));
+            //holder.textView.setText(item.getString("name"));
+            String text = item.getString("name");
+            holder.textView.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT));
 
             if (!item.getJSONArray("pic").equals(new JSONArray("[]"))){
                 // 使用 Glide 直接加载和裁剪图片

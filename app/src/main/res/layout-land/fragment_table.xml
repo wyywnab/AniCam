@@ -60,7 +60,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/resetBrightness_button"
+                android:id="@+id/setColorOptions_button"
                 android:layout_width="48dp"
                 android:layout_height="56dp"
                 android:backgroundTint="@color/transparent_60"

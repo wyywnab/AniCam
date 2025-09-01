@@ -108,4 +108,8 @@
     <string name="info_uiHidedTip">Интерфейс скрыт. Длительное нажатие для восстановления</string>
     <string name="info_picAutoDeleted_prefix">Добавленное изображение<![CDATA[<br>]]></string>
     <string name="info_picAutoDeleted_suffix"><![CDATA[<br>]]>не найдено, удалено автоматически</string>
+    <string name="info_sensorInit">Инициализация сенсоров…</string>
+    <string name="info_sensorInitFailed">Ошибка инициализации сенсоров. Перезапустите приложение или проверьте наличие акселерометра на устройстве</string>
+    <string name="setting_keepScreenOn_title">Всегда включенный экран</string>
+    <string name="setting_keepScreenOn_msg">В режиме рабочего стола экран не гаснет. Может вызвать разряд батареи и выгорание пикселей. Включайте с осторожностью.</string>
 </resources>

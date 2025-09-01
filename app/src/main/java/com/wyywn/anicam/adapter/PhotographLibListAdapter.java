@@ -1,5 +1,6 @@
 package com.wyywn.anicam.adapter;
 
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,8 +65,9 @@ public class PhotographLibListAdapter extends RecyclerView.Adapter<PhotographLib
     public void onBindViewHolder(ViewHolder holder, int position) {
         try {
             JSONObject item = mData.getJSONObject(position);
-            holder.textView.setText(item.getString("name"));
-
+            //holder.textView.setText(item.getString("name"));
+            String text = item.getString("name");
+            holder.textView.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT));
             holder.itemView.setSelected(position == selectedPosition);
         } catch (JSONException e) {
             throw new RuntimeException(e);

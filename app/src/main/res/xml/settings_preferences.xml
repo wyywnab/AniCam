@@ -98,6 +98,13 @@
 
     <PreferenceCategory android:title="@string/category_table" app:iconSpaceReserved="false">
         <SwitchPreference
+            android:key="keepScreenOn"
+            android:title="@string/setting_keepScreenOn_title"
+            android:summary="@string/setting_keepScreenOn_msg"
+            android:defaultValue="false"
+            app:iconSpaceReserved="false"/>
+
+        <SwitchPreference
             android:key="showClock"
             android:title="@string/setting_showClock_title"
             android:summary="@string/setting_showClock_msg"

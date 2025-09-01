@@ -12,6 +12,10 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 
 import androidx.activity.OnBackPressedCallback;
@@ -28,6 +32,7 @@ import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
@@ -73,11 +78,13 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.slider.Slider;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.wyywn.anicam.utils.FixedSizeQueue;
 import com.wyywn.anicam.utils.FullScreenUtils;
 import com.wyywn.anicam.utils.Functions;
 import com.wyywn.anicam.MainActivity;
@@ -108,7 +115,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PhotographFragment extends Fragment implements
-        PhotographPicListAdapter.OnOrderChangedListener,  PhotographPicListAdapter.OnItemRemovedListener{
+        PhotographPicListAdapter.OnOrderChangedListener,  PhotographPicListAdapter.OnItemRemovedListener, SensorEventListener {
 
     private static final int ON_LIB_TAB = 0;
     private static final int ON_SCREEN_TAB = 1;
@@ -133,6 +140,10 @@ public class PhotographFragment extends Fragment implements
     private PreviewView cameraPreviewView;
     private CameraControl cameraControl;
     private CameraInfo cameraInfo;
+    private SensorManager sensorManager;
+    private Sensor accelerometer;
+    private long lastAccelerometerUpdateTime = 0;
+    private FixedSizeQueue angleQueue;
     private boolean isFlashOn = false;
     private int screenWidth;
     private int screenHeight;
@@ -291,6 +302,11 @@ public class PhotographFragment extends Fragment implements
         TextViewHint.resetState();
         Functions.hideContentWithAnimation(requireActivity().findViewById(R.id.info_textView));
         //executor.shutdownNow();
+
+        /*SharedPreferences.Editor editor = prefs_photograph.edit();
+        editor.putBoolean("autoRotate", false);
+        editor.apply();*/
+        disableAutoRotate();
         binding = null;
     }
 
@@ -656,6 +672,8 @@ public class PhotographFragment extends Fragment implements
                     binding.right.setLayoutParams(params);
 
                     Functions.showContentWithAnimation(binding.selectionLinear);
+
+                    binding.bottomBlank.setVisibility(View.VISIBLE);
                 } else {
                     Functions.hideContentWithAnimation(binding.selectionLinear, () -> {
                         binding.toggleSelectionButton.setIconResource(R.drawable.keyboard_arrow_left_24px);
@@ -668,6 +686,8 @@ public class PhotographFragment extends Fragment implements
                             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.right.getLayoutParams();
                             params.width = ConstraintLayout.LayoutParams.WRAP_CONTENT;
                             binding.right.setLayoutParams(params);
+
+                            binding.bottomBlank.setVisibility(View.GONE);
                         }
                     });
                 }
@@ -682,21 +702,17 @@ public class PhotographFragment extends Fragment implements
             boolean isPortrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
             if (isCollapsed){
                 Functions.showContentWithAnimation(nav);
-                //Functions.showContentWithAnimation(binding.bottomBlank);
-                /*nav.setVisibility(View.VISIBLE);
-                binding.bottomBlank.setVisibility(View.VISIBLE);*/
                 binding.toggleNavigationButton.setIconResource(R.drawable.keyboard_arrow_down_24px);
 
                 if (!isPortrait){
                     ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.right.getLayoutParams();
                     params.width = (int) (320 * getResources().getDisplayMetrics().density);
                     binding.right.setLayoutParams(params);
+
+                    binding.bottomBlank.setVisibility(View.VISIBLE);
                 }
             } else {
                 Functions.hideContentWithAnimation(nav);
-                //Functions.hideContentWithAnimation(binding.bottomBlank);
-                /*nav.setVisibility(View.GONE);
-                binding.bottomBlank.setVisibility(View.GONE);*/
                 binding.toggleNavigationButton.setIconResource(R.drawable.keyboard_arrow_up_24px);
 
                 if (!isPortrait){
@@ -705,6 +721,8 @@ public class PhotographFragment extends Fragment implements
                         ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.right.getLayoutParams();
                         params.width = ConstraintLayout.LayoutParams.WRAP_CONTENT;
                         binding.right.setLayoutParams(params);
+
+                        binding.bottomBlank.setVisibility(View.GONE);
                     }
                 }
             }
@@ -721,7 +739,135 @@ public class PhotographFragment extends Fragment implements
                 //binding.zoomSlider.setVisibility(View.VISIBLE);
             }
         });
+
+        if (prefs_photograph.getBoolean("autoRotate", false)){
+            enableAutoRotate();
+        } else {
+            disableAutoRotate();
+        }
+        assert getView() != null;
+        /*int notSelectedColor = MaterialColors.getColor(getView(), com.google.android.material.R.attr.colorOnSecondary);
+        binding.autoRotateButton.setBackgroundColor(notSelectedColor);*/
+        binding.autoRotateButton.setOnClickListener(v -> {
+            if (prefs_photograph.getBoolean("autoRotate", false)){
+                disableAutoRotate();
+                editor.putBoolean("autoRotate", false);
+            } else {
+                enableAutoRotate();
+                editor.putBoolean("autoRotate", true);
+            }
+            editor.apply();
+        });
     }
+    private void enableAutoRotate(){
+        assert getActivity() != null;
+        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        if (sensorManager == null) return;
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        if (accelerometer != null) {
+            TextViewHint.showText(R.string.info_sensorInit);
+            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_GAME);
+
+            onInitRotatePic();
+            angleQueue = new FixedSizeQueue<>(3);
+
+            assert getView() != null;
+            int selectedColor = MaterialColors.getColor(getView(), com.google.android.material.R.attr.colorOutline);
+            binding.autoRotateButton.setBackgroundColor(selectedColor);
+
+            if (binding.resetRotationButton.getVisibility() == View.VISIBLE){
+                Functions.hideContentWithAnimation(binding.resetRotationButton);
+            }
+            //binding.rotationSlider.setActivated(false);
+        } else {
+            TextViewHint.showText(R.string.info_sensorInitFailed);
+        }
+    }
+    private void disableAutoRotate(){
+        onStopRotatePic();
+
+        assert getView() != null;
+        int notSelectedColor = MaterialColors.getColor(getView(), com.google.android.material.R.attr.colorOnSecondary);
+        binding.autoRotateButton.setBackgroundColor(notSelectedColor);
+        //binding.rotationSlider.set(true);
+
+        if (rotationSlider_lastRotation != 0){
+            if (binding.resetRotationButton.getVisibility() == View.GONE){
+                Functions.showContentWithAnimation(binding.resetRotationButton);
+            }
+            addResetRotationListener();
+        }
+
+        if (sensorManager != null) {
+            sensorManager.unregisterListener(this);
+        }
+    }
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // 传感器精度变化时的回调，通常不需要特殊处理
+    }
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        // 确保是加速度传感器数据
+        if (event.sensor.getType() != Sensor.TYPE_ACCELEROMETER) {
+            return;
+        }
+
+        float x = event.values[0];
+        float y = event.values[1];
+        float z = event.values[2];
+
+        float currentAngle = 0;
+        //int orientation = getResources().getConfiguration().orientation;
+        WindowManager windowManager = (WindowManager) requireActivity().getSystemService(Context.WINDOW_SERVICE);
+        Display display = windowManager.getDefaultDisplay();
+        int rotation = display.getRotation();
+        if (rotation == Surface.ROTATION_0){
+            currentAngle = (float) Math.toDegrees(Math.atan2(y, x)) - 90;
+        } else if (rotation == Surface.ROTATION_90) {
+            currentAngle = (float) Math.toDegrees(Math.atan2(y, x));
+        } else if (rotation == Surface.ROTATION_270) {
+            currentAngle = (float) Math.toDegrees(Math.atan2(y, x)) - 180;
+        }
+        double angle2Z = Math.toDegrees(Math.atan2(Math.sqrt(x * x + y * y), z));
+        if (angle2Z < 10) return;
+
+        float angle;
+        if (angleQueue.size() == 3){
+            float delta = Math.abs((Float) angleQueue.get(2) - currentAngle);
+            if (delta < 60) {
+                angleQueue.add(currentAngle);
+            }
+            if (delta < 0.4){
+                return;
+            } else if (delta < 5) {
+                angle = ((Float) angleQueue.get(0) + (Float) angleQueue.get(1) + (Float) angleQueue.get(2)) / 3;
+            } else if (delta < 30) {
+                angle = (float) (0.2 * (Float) angleQueue.get(0) + 0.3 * (Float) angleQueue.get(1) + 0.5 * (Float) angleQueue.get(2));
+            } else {
+                angle = currentAngle;
+            }
+        } else {
+            angle = currentAngle;
+            angleQueue.add(currentAngle);
+        }
+
+        // 限制UI更新频率，避免卡顿
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastAccelerometerUpdateTime >= 7) {
+            lastAccelerometerUpdateTime = currentTime;
+            // 在主线程更新UI
+            if (angle < -180){
+                angle += 360;
+            }
+            float finalAngle = angle;
+            getActivity().runOnUiThread(() -> {
+                onRotatePic(finalAngle);
+                binding.rotationSlider.setValue(finalAngle);
+            });
+        }
+    }
+
     private void updatePreviewButton(Uri uri) {
         // 使用 Glide 直接加载到 ImageView，并应用 centerCrop 变换
         requireActivity().runOnUiThread(() ->
@@ -811,7 +957,7 @@ public class PhotographFragment extends Fragment implements
                     //int progress = (int) initialRotation;
                     binding.rotationSlider.setValue(initialRotation);
 
-                    if ((int)initialRotation != 0){
+                    if ((int)initialRotation != 0 && !prefs_photograph.getBoolean("autoRotate", false)){
                         if (binding.resetRotationButton.getVisibility() == View.GONE){
                             Functions.showContentWithAnimation(binding.resetRotationButton);
                         }
@@ -841,6 +987,10 @@ public class PhotographFragment extends Fragment implements
             if (!autoSelect()) {
                 binding.rotationSlider.setValue(0);
                 //binding.resetRotationButton.setVisibility(View.INVISIBLE);
+                Functions.hideContentWithAnimation(binding.resetRotationButton);
+                return;
+            }
+            if (prefs_photograph.getBoolean("autoRotate", false)){
                 Functions.hideContentWithAnimation(binding.resetRotationButton);
                 return;
             }
@@ -877,73 +1027,89 @@ public class PhotographFragment extends Fragment implements
         binding.rotationSlider.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
             @Override
             public void onStartTrackingTouch(@NonNull Slider slider) {
-                if (!autoSelect()) return;
-                try {
-                    // onStartTrackingTouch() 的逻辑
-                    rotationSlider_picObj = selectedPresetPicsArr.getJSONObject(selectedPicPosition);
-                    rotationSlider_imageView = imageViewList.get(selectedPicPosition);
-                    rotationSlider_matrix = Functions.stringToMatrix(rotationSlider_picObj.getString("matrix"));
-                    rotationSlider_midPoints = Functions.getTransformedCenter(rotationSlider_matrix, rotationSlider_picObj.getInt("width"), rotationSlider_picObj.getInt("height"));
-
-                    float[] values = new float[9];
-                    rotationSlider_matrix.getValues(values);
-                    rotationSlider_initialRotation = (float) Math.toDegrees(Math.atan2(values[Matrix.MSKEW_X], values[Matrix.MSCALE_X]));
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        binding.rotationSlider.setTooltipText(Float.toString(rotationSlider_initialRotation));
-                    }
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
+                if (prefs_photograph.getBoolean("autoRotate", false)) return;
+                onInitRotatePic();
             }
 
             @Override
             public void onStopTrackingTouch(@NonNull Slider slider) {
-                if (!autoSelect()) return;
-                try {
-                    // onStopTrackingTouch() 的逻辑
-                    rotationSlider_picObj.put("matrix", Functions.matrixToString(rotationSlider_matrix));
-                    Functions.saveEnv(exDataPath, envJsonObj);
+                if (prefs_photograph.getBoolean("autoRotate", false)) return;
 
-                    if (rotationSlider_lastRotation != 0){
-                        if (binding.resetRotationButton.getVisibility() == View.GONE){
-                            Functions.showContentWithAnimation(binding.resetRotationButton);
-                        }
-                        //binding.resetRotationButton.setVisibility(View.VISIBLE);
-                        addResetRotationListener();
-                    } else {
-                        Functions.hideContentWithAnimation(binding.resetRotationButton);
-                        //binding.resetRotationButton.setVisibility(View.INVISIBLE);
+                onStopRotatePic();
+
+                if (rotationSlider_lastRotation != 0){
+                    if (binding.resetRotationButton.getVisibility() == View.GONE){
+                        Functions.showContentWithAnimation(binding.resetRotationButton);
                     }
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
+                    //binding.resetRotationButton.setVisibility(View.VISIBLE);
+                    addResetRotationListener();
+                } else {
+                    Functions.hideContentWithAnimation(binding.resetRotationButton);
+                    //binding.resetRotationButton.setVisibility(View.INVISIBLE);
                 }
             }
         });
 
         binding.rotationSlider.addOnChangeListener((slider, value, fromUser) -> {
-            if (!autoSelect()) {
-                // 注意：Slider没有setProgress方法，需要用setValue
-                binding.rotationSlider.setValue(0);
+            if (!fromUser) return;
+            if (prefs_photograph.getBoolean("autoRotate", false)) return;
+            onRotatePic(value);
+        });
+    }
+    private void onInitRotatePic(){
+        if (!autoSelect()) return;
+        try {
+            // onStartTrackingTouch() 的逻辑
+            rotationSlider_picObj = selectedPresetPicsArr.getJSONObject(selectedPicPosition);
+            rotationSlider_imageView = imageViewList.get(selectedPicPosition);
+            rotationSlider_matrix = Functions.stringToMatrix(rotationSlider_picObj.getString("matrix"));
+            rotationSlider_midPoints = Functions.getTransformedCenter(rotationSlider_matrix, rotationSlider_picObj.getInt("width"), rotationSlider_picObj.getInt("height"));
+
+            float[] values = new float[9];
+            rotationSlider_matrix.getValues(values);
+            rotationSlider_initialRotation = (float) Math.toDegrees(Math.atan2(values[Matrix.MSKEW_X], values[Matrix.MSCALE_X]));
+
+            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                binding.rotationSlider.setTooltipText(Float.toString(rotationSlider_initialRotation));
+            }*/
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private void onStopRotatePic(){
+        if (!autoSelect()) return;
+        try {
+            if (rotationSlider_picObj == null){
                 return;
             }
-            if (!fromUser) return;
-            try {
-                // onProgressChanged() 的逻辑
-                rotationSlider_matrix = Functions.stringToMatrix(rotationSlider_picObj.getString("matrix"));
-                // Slider 的值是 float 类型，所以直接使用 value
-                rotationSlider_matrix.postRotate(rotationSlider_initialRotation - value, rotationSlider_midPoints[0], rotationSlider_midPoints[1]);
-                rotationSlider_imageView.setImageMatrix(rotationSlider_matrix);
+            rotationSlider_picObj.put("matrix", Functions.matrixToString(rotationSlider_matrix));
+            Functions.saveEnv(exDataPath, envJsonObj);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @SuppressLint("DefaultLocale")
+    private void onRotatePic(float value){
+        if (!autoSelect()) {
+            // 注意：Slider没有setProgress方法，需要用setValue
+            binding.rotationSlider.setValue(0);
+            return;
+        }
+        try {
+            // onProgressChanged() 的逻辑
+            rotationSlider_matrix = Functions.stringToMatrix(rotationSlider_picObj.getString("matrix"));
+            // Slider 的值是 float 类型，所以直接使用 value
+            rotationSlider_matrix.postRotate(rotationSlider_initialRotation - value, rotationSlider_midPoints[0], rotationSlider_midPoints[1]);
+            rotationSlider_imageView.setImageMatrix(rotationSlider_matrix);
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    binding.rotationSlider.setTooltipText(Float.toString(value));
-                }
-                rotationSlider_lastRotation = value;
-                TextViewHint.showText(getString(R.string.hint_rotation).concat(String.format("%.1f", value)).concat(getString(R.string.hint_rotation_suffix)));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                binding.rotationSlider.setTooltipText(Float.toString(value));
+            }*/
+            rotationSlider_lastRotation = value;
+            TextViewHint.showText(getString(R.string.hint_rotation).concat(String.format("%.1f", value)).concat(getString(R.string.hint_rotation_suffix)));
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -980,6 +1146,11 @@ public class PhotographFragment extends Fragment implements
                     startPoint[0] = event.getX();
                     startPoint[1] = event.getY();
                     startMatrix[0].set(imageView.getImageMatrix());
+
+                    if (prefs_photograph.getBoolean("autoRotate", false)){
+                        disableAutoRotate();
+                    }
+
                     break;
 
                 case MotionEvent.ACTION_POINTER_DOWN:
@@ -1070,6 +1241,10 @@ public class PhotographFragment extends Fragment implements
                         if (moveX < touchSlop && moveY < touchSlop) {
                             performTapToFocus(event.getX(), event.getY());
                         }
+                    }
+
+                    if (prefs_photograph.getBoolean("autoRotate", false)){
+                        enableAutoRotate();
                     }
                     break;
             }
@@ -1214,6 +1389,11 @@ public class PhotographFragment extends Fragment implements
         if (selectedPresetPicsArr == null || selectedPicPosition == -1){
             //Toast.makeText(requireContext(), "_not selected, returning.", Toast.LENGTH_SHORT).show();
             return;
+        }
+
+        if (prefs_photograph.getBoolean("autoRotate", false)){
+            onStopRotatePic();
+            onInitRotatePic();
         }
 
         String filename = Functions.formatTimeInString(prefs_setting.getString("photoNameFormat", "anicam_{yyyyMMdd_HHmmss}"));
@@ -1531,7 +1711,7 @@ public class PhotographFragment extends Fragment implements
     }
 
     private void setupColorOptionDialogListener(){
-        binding.resetBrightnessButton.setOnClickListener(v -> {
+        binding.setColorOptionsButton.setOnClickListener(v -> {
             if (!autoSelect()) return;
             BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
             View dialogView = getLayoutInflater().inflate(R.layout.dialog_switch_colormatrix, null);

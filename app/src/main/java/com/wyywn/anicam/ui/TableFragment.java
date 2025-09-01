@@ -240,6 +240,11 @@ public class TableFragment extends Fragment implements
         setLibSelection();
         setPresetsSelection();
         TextViewHint.init(requireActivity().findViewById(R.id.info_textView));
+
+        if (prefs_setting.getBoolean("keepScreenOn", false)){
+            assert getActivity() != null;
+            getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
     }
 
     @Override
@@ -251,6 +256,11 @@ public class TableFragment extends Fragment implements
         TextViewHint.resetState();
         Functions.hideContentWithAnimation(requireActivity().findViewById(R.id.info_textView));
         //executor.shutdownNow();
+
+        if (prefs_setting.getBoolean("keepScreenOn", false)){
+            assert getActivity() != null;
+            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
         binding = null;
     }
 
@@ -561,6 +571,8 @@ public class TableFragment extends Fragment implements
                     binding.right.setLayoutParams(params);
 
                     Functions.showContentWithAnimation(binding.selectionLinear);
+
+                    binding.bottomBlank.setVisibility(View.VISIBLE);
                 } else {
                     Functions.hideContentWithAnimation(binding.selectionLinear, () -> {
                         binding.toggleSelectionButton.setIconResource(R.drawable.keyboard_arrow_left_24px);
@@ -573,6 +585,8 @@ public class TableFragment extends Fragment implements
                             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.right.getLayoutParams();
                             params.width = ConstraintLayout.LayoutParams.WRAP_CONTENT;
                             binding.right.setLayoutParams(params);
+
+                            binding.bottomBlank.setVisibility(View.GONE);
                         }
                     });
                 }
@@ -595,6 +609,8 @@ public class TableFragment extends Fragment implements
                     ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.right.getLayoutParams();
                     params.width = (int) (320 * getResources().getDisplayMetrics().density);
                     binding.right.setLayoutParams(params);
+
+                    binding.bottomBlank.setVisibility(View.VISIBLE);
                 }
             } else {
                 Functions.hideContentWithAnimation(nav);
@@ -607,6 +623,8 @@ public class TableFragment extends Fragment implements
                         ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.right.getLayoutParams();
                         params.width = ConstraintLayout.LayoutParams.WRAP_CONTENT;
                         binding.right.setLayoutParams(params);
+
+                        binding.bottomBlank.setVisibility(View.GONE);
                     }
                 }
             }
@@ -669,6 +687,7 @@ public class TableFragment extends Fragment implements
         boolean isPortrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
         SharedPreferences.Editor editor = prefs_table.edit();
         if (isAllHided){
+            binding.bottomBlank.setVisibility(View.VISIBLE);
             if (prefs_table.getBoolean("collapsedNavigation", false)){
                 assert getActivity() != null;
                 Functions.showContentWithAnimation(getActivity().findViewById(R.id.nav_view));
@@ -677,24 +696,23 @@ public class TableFragment extends Fragment implements
                 }
             }
             if (prefs_table.getBoolean("collapsedSelection", false)){
-                if (!isPortrait){
-                        binding.right.setBackgroundResource(R.color.transparent_40);
-                        Functions.showContentWithAnimation(binding.right, () -> {
-                            if (binding.selectionLinear.getVisibility() == View.GONE) {
-                                Functions.showContentWithAnimation(binding.selectionLinear);
-                            }
-                        });
-
-                        ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.right.getLayoutParams();
-                        params.width = (int) (320 * getResources().getDisplayMetrics().density);
-                        binding.right.setLayoutParams(params);
-
-                } else {
+                if (isPortrait){
                     Functions.showContentWithAnimation(binding.selectionLinear);
 
                     ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.centralConstraint.getLayoutParams();
                     params.bottomToTop = binding.selectionLinear.getId();
                     binding.centralConstraint.setLayoutParams(params);
+                } else {
+                    binding.right.setBackgroundResource(R.color.transparent_40);
+                    Functions.showContentWithAnimation(binding.right, () -> {
+                        if (binding.selectionLinear.getVisibility() == View.GONE) {
+                            Functions.showContentWithAnimation(binding.selectionLinear);
+                        }
+                    });
+
+                    ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.right.getLayoutParams();
+                    params.width = (int) (320 * getResources().getDisplayMetrics().density);
+                    binding.right.setLayoutParams(params);
                 }
             }
             if (prefs_table.getBoolean("collapsedCentralConstraint", false)){
@@ -1204,7 +1222,7 @@ public class TableFragment extends Fragment implements
     }
 
     private void setupColorOptionDialogListener(){
-        binding.resetBrightnessButton.setOnClickListener(v -> {
+        binding.setColorOptionsButton.setOnClickListener(v -> {
             if (!autoSelect()) return;
             BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
             View dialogView = getLayoutInflater().inflate(R.layout.dialog_switch_colormatrix, null);

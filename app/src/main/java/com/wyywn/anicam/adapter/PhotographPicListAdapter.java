@@ -3,6 +3,7 @@ package com.wyywn.anicam.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,12 +92,12 @@ public class PhotographPicListAdapter extends RecyclerView.Adapter<PhotographPic
             // 使用 Glide 直接加载和裁剪图片
             Uri imageUri = Uri.parse(item.getString("uri"));
             if (!Functions.isUriFileExists(holder.context, imageUri)){
-                holder.textView.setText(item.getString("name"));
                 int errorColor = MaterialColors.getColor(holder.textView.getRootView(), com.google.android.material.R.attr.colorErrorContainer);
                 holder.background.setBackgroundColor(errorColor);
-            } else {
-                holder.textView.setText(item.getString("name"));
             }
+            //holder.textView.setText(item.getString("name"));
+            String text = item.getString("name");
+            holder.textView.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT));
             // 使用 Glide 的变换功能进行裁剪
             Glide.with(holder.imageView.getContext())
                     .load(imageUri)

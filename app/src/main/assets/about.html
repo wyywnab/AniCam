@@ -3,32 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="src/mdui.css">
     <style>
+        html{
+            background: white !important;
+        }
         body{
             overflow: hidden;
             touch-action: none;
-            padding: 0 10px 0 10px;
+            padding: 20px 10px 20px 10px;
 
             background-size: 40%;
             background-repeat: no-repeat;
             background-position: right bottom;
         }
+        hr{
+            margin-top: 0 !important;
+            margin-bottom: 10px !important;
+        }
+        p{
+            margin: 0 !important;
+            margin-bottom: 10px !important;
+        }
+        h2{
+            margin: 0 !important;
+        }
+        .text{
+            color: black !important;
+        }
     </style>
 </head>
-<body>
+<body class="mdui-prose">
     <h2>AniCam</h2>
-    <sub style="float: right;">v1.0.1 by wyywn</sub><br>
+    <sub style="float: right;">v1.1.0 by wyywn</sub><br>
     <hr>
     <p>A camera app able to put anime images on real-world.</p>
-    <p><a href="https://github.com/wyywnab/AniCam">https://github.com/wyywnab/AniCam</a></p>
+    <p><a style="white-space: nowrap;" href="https://github.com/wyywnab/AniCam">https://github.com/wyywnab/AniCam</a></p>
     <hr>
-    <p>Made with love for <a>Naruse Shiroha</a>.</p>
+    <p>Made with love for <a class="text">Naruse Shiroha</a>.</p>
     
     <script>
         var times = 0;
         document.querySelectorAll("a")[1].addEventListener("click",function(){
             if (times == 20){
-                document.body.style.backgroundImage = 'url("https://t.vndb.org/ch/37/82437.jpg")';
+                document.body.style.backgroundImage = 'url("file:///android_asset/src/intro.png")';
             }
             times++;
         });

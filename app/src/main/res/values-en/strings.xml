@@ -108,4 +108,8 @@
     <string name="info_uiHidedTip">UI hidden. Long-press screen to restore.</string>
     <string name="info_picAutoDeleted_prefix">Added picture<![CDATA[<br>]]></string>
     <string name="info_picAutoDeleted_suffix"><![CDATA[<br>]]>not found, automatically deleted</string>
+    <string name="info_sensorInit">Initializing sensors…</string>
+    <string name="info_sensorInitFailed">Sensor initialization failed. Try restarting the app, or your device may not have an accelerometer.</string>
+    <string name="setting_keepScreenOn_title">Keep screen always on</string>
+    <string name="setting_keepScreenOn_msg">Keeps screen on in Tabletop mode. May cause battery drain, screen burn-in. Enable with caution.</string>
 </resources>

@@ -108,4 +108,8 @@
     <string name="info_uiHidedTip">UIは非表示中です。画面を長押しで元に戻ります</string>
     <string name="info_picAutoDeleted_prefix">追加した画像<![CDATA[<br>]]></string>
     <string name="info_picAutoDeleted_suffix"><![CDATA[<br>]]>存在せず、自動削除されました</string>
+    <string name="info_sensorInit">センサー初期化中…</string>
+    <string name="info_sensorInitFailed">センサー初期化に失敗しました。アプリを再起動するか、本端末が加速度センサーに対応していない可能性があります</string>
+    <string name="setting_keepScreenOn_title">画面を常時点灯</string>
+    <string name="setting_keepScreenOn_msg">卓上モードで画面を常時点灯します。バッテリー消耗や焼き付きの原因となる場合があります。注意して有効にしてください</string>
 </resources>

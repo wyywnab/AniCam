@@ -109,4 +109,8 @@
     <string name="info_uiHidedTip">UI已隐藏，可通过长按屏幕恢复</string>
     <string name="info_picAutoDeleted_prefix">已添加的图片<![CDATA[<br>]]></string>
     <string name="info_picAutoDeleted_suffix"><![CDATA[<br>]]>不存在，已自动删除</string>
+    <string name="info_sensorInit">传感器初始化中...</string>
+    <string name="info_sensorInitFailed">传感器初始化失败，请尝试重启软件，或本设备不支持加速度传感器</string>
+    <string name="setting_keepScreenOn_title">保持屏幕常亮</string>
+    <string name="setting_keepScreenOn_msg">在桌面模式下保持屏幕常亮，可能导致耗电、烧屏等问题，谨慎开启</string>
 </resources>

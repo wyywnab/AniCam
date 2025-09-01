@@ -89,11 +89,23 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/resetBrightness_button"
+                android:id="@+id/setColorOptions_button"
                 android:layout_width="48dp"
                 android:layout_height="56dp"
                 android:backgroundTint="@color/transparent_60"
                 app:icon="@drawable/filter_24px"
+                app:iconSize="24dp"
+                app:iconPadding="0dp"
+                app:iconGravity="textStart"
+                app:cornerRadius="16dp"
+                style="@style/Widget.Material3Expressive.Button.ElevatedButton" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/autoRotate_button"
+                android:layout_width="48dp"
+                android:layout_height="56dp"
+                android:backgroundTint="@color/transparent_60"
+                app:icon="@drawable/mobile_rotate_24px"
                 app:iconSize="24dp"
                 app:iconPadding="0dp"
                 app:iconGravity="textStart"
